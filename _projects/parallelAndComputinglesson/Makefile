@@ -20,6 +20,7 @@ JS_DEST = $(WORKSPACE_ROOT)/assets/js/projects/$(PROJECT_NAME)
 IMAGES_DEST = $(WORKSPACE_ROOT)/images/projects/$(PROJECT_NAME)
 NOTEBOOK_DEST = $(WORKSPACE_ROOT)/_notebooks/projects/$(PROJECT_NAME)
 DOCS_DEST = $(WORKSPACE_ROOT)/_posts/projects/$(PROJECT_NAME)
+HTML_DEST = $(WORKSPACE_ROOT)/assets/html/projects/$(PROJECT_NAME)
 
 ###########################################
 # Build Targets
@@ -35,6 +36,7 @@ build:
 	@echo "   Notebook: _notebooks/projects/$(PROJECT_NAME)/$(NOTEBOOK_FILENAME)"
 	@echo "   JavaScript: assets/js/projects/$(PROJECT_NAME)/"
 	@echo "   Images: images/projects/$(PROJECT_NAME)/"
+	@echo "   Interactive Lesson: assets/html/projects/$(PROJECT_NAME)/index.html"
 
 # Copy only JS and image assets (not notebook) - for watch triggers
 assets:
@@ -44,6 +46,8 @@ assets:
 	@cp model/*.js $(JS_DEST)/model/ 2>/dev/null || true
 	@mkdir -p $(IMAGES_DEST)
 	@cp -r images/* $(IMAGES_DEST)/ 2>/dev/null || true
+	@mkdir -p $(HTML_DEST)
+	@cp index.html $(HTML_DEST)/ 2>/dev/null || true
 
 # Clean distributed files (keeps source intact)
 clean:
@@ -51,6 +55,7 @@ clean:
 	@rm -rf $(NOTEBOOK_DEST)
 	@rm -rf $(JS_DEST)
 	@rm -rf $(IMAGES_DEST)
+	@rm -rf $(HTML_DEST)
 	@echo "✓ Distribution cleaned (source files preserved in _projects/$(PROJECT_NAME))"
 
 ###########################################
