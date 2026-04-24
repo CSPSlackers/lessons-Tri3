@@ -1,4 +1,4 @@
-# Makefile
+# CS Pathway Game Project Makefile
 # Generic targets: build, assets, clean, watch, docs, docs-clean
 # Called from main Makefile via: make -C _projects/cs-pathway-game <target>
 
@@ -7,7 +7,7 @@
 ###########################################
 
 # Project paths (relative to workspace root)
-DATE_OF_CREATION = 2026-04-12
+DATE_OF_CREATION = 2026-04-24
 PROJECT_SRC = $(CURDIR)
 PROJECT_NAME = $(notdir $(PROJECT_SRC))
 NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-$(PROJECT_NAME).ipynb
@@ -39,7 +39,7 @@ build:
 # Copy only JS and image assets (not notebook) - for watch triggers
 assets:
 	@mkdir -p $(JS_DEST)/levels
-	@cp -r levels/* $(JS_DEST)/levels/ 2>/dev/null || true
+	@cp levels/*.js $(JS_DEST)/levels/ 2>/dev/null || true
 	@mkdir -p $(JS_DEST)/model
 	@cp model/*.js $(JS_DEST)/model/ 2>/dev/null || true
 	@mkdir -p $(IMAGES_DEST)
@@ -68,11 +68,10 @@ watch:
 				cp $(PROJECT_SRC)/notebook.src.ipynb $(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME) 2>/dev/null || true; \
 				cd $(WORKSPACE_ROOT) && make convert-single NOTEBOOK_FILE="$(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME)" 2>&1; \
 			elif echo "$$changed_file" | grep -q "/levels/"; then \
-				rel_path=$${changed_file#$(PROJECT_SRC)/levels/}; \
-				echo "  🔄 Level changed: $$rel_path"; \
-				dest_dir="$(JS_DEST)/levels/$$(dirname "$$rel_path")"; \
-				mkdir -p "$$dest_dir"; \
-				cp "$$changed_file" "$$dest_dir/" 2>/dev/null || true; \
+				filename=$$(basename "$$changed_file"); \
+				echo "  🔄 Level changed: $$filename"; \
+				mkdir -p $(JS_DEST)/levels; \
+				cp "$$changed_file" $(JS_DEST)/levels/ 2>/dev/null || true; \
 			elif echo "$$changed_file" | grep -q "/model/"; then \
 				filename=$$(basename "$$changed_file"); \
 				echo "  🔄 Model changed: $$filename"; \
