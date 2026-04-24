@@ -11,6 +11,7 @@ DATE_OF_CREATION = 2026-04-24
 PROJECT_SRC = $(CURDIR)
 PROJECT_NAME = $(notdir $(PROJECT_SRC))
 NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-$(PROJECT_NAME).ipynb
+DISTRIBUTED_NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-distributed_computing.ipynb
 
 # Workspace root (main Makefile directory - two levels up from here)
 WORKSPACE_ROOT = ../..
@@ -26,14 +27,16 @@ HTML_DEST = $(WORKSPACE_ROOT)/assets/html/projects/$(PROJECT_NAME)
 # Build Targets
 ###########################################
 
-# Main build target - copy notebook and call assets
+# Main build target - copy notebooks and call assets
 build:
 	@mkdir -p $(NOTEBOOK_DEST)
 	@cp notebook.src.ipynb $(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME) 2>/dev/null || true
+	@cp distributed_computing.ipynb $(NOTEBOOK_DEST)/$(DISTRIBUTED_NOTEBOOK_FILENAME) 2>/dev/null || true
 	@$(MAKE) assets
 	@echo "✅ $(PROJECT_NAME) built successfully"
 	@echo "   Source: _projects/$(PROJECT_NAME)/"
 	@echo "   Notebook: _notebooks/projects/$(PROJECT_NAME)/$(NOTEBOOK_FILENAME)"
+	@echo "   Distributed Lesson: _notebooks/projects/$(PROJECT_NAME)/$(DISTRIBUTED_NOTEBOOK_FILENAME)"
 	@echo "   JavaScript: assets/js/projects/$(PROJECT_NAME)/"
 	@echo "   Images: images/projects/$(PROJECT_NAME)/"
 	@echo "   Interactive Lesson: assets/html/projects/$(PROJECT_NAME)/index.html"
@@ -72,6 +75,11 @@ watch:
 				mkdir -p $(NOTEBOOK_DEST); \
 				cp $(PROJECT_SRC)/notebook.src.ipynb $(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME) 2>/dev/null || true; \
 				cd $(WORKSPACE_ROOT) && make convert-single NOTEBOOK_FILE="$(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME)" 2>&1; \
+			elif echo "$$changed_file" | grep -q "distributed_computing.ipynb"; then \
+				echo "  🔄 Distributed notebook changed - copying and converting..."; \
+				mkdir -p $(NOTEBOOK_DEST); \
+				cp $(PROJECT_SRC)/distributed_computing.ipynb $(NOTEBOOK_DEST)/$(DISTRIBUTED_NOTEBOOK_FILENAME) 2>/dev/null || true; \
+				cd $(WORKSPACE_ROOT) && make convert-single NOTEBOOK_FILE="$(NOTEBOOK_DEST)/$(DISTRIBUTED_NOTEBOOK_FILENAME)" 2>&1; \
 			elif echo "$$changed_file" | grep -q "/levels/"; then \
 				filename=$$(basename "$$changed_file"); \
 				echo "  🔄 Level changed: $$filename"; \
