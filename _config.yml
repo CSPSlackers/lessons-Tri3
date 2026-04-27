@@ -20,7 +20,7 @@ description: "Lessons for stuff"
 owner_name: CSPSlackers
 github_username: CSPSlackers
 github_repo: "lessons-Tri3" 
-baseurl: "" 
+baseurl: "/lessons-Tri3" 
 future: true
 
 # Exclude from Jekyll watch - these are processed by our conversion scripts
