@@ -11,10 +11,12 @@ DATE_OF_CREATION = 2026-04-24
 PROJECT_SRC = $(CURDIR)
 PROJECT_NAME = $(notdir $(PROJECT_SRC))
 NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-$(PROJECT_NAME).ipynb
-DISTRIBUTED_NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-distributed_computing.ipynb
+# When producing a distributed notebook, include the project name for clarity
+DISTRIBUTED_NOTEBOOK_FILENAME = $(DATE_OF_CREATION)-$(PROJECT_NAME)-distributed.ipynb
 
 # Workspace root (main Makefile directory - two levels up from here)
-WORKSPACE_ROOT = ../..
+# Use an absolute path so targets resolve correctly whether called from top-level or via -C
+WORKSPACE_ROOT := $(abspath $(CURDIR)/../..)
 
 # Distribution destinations (relative to workspace root, in .gitignore)
 JS_DEST = $(WORKSPACE_ROOT)/assets/js/projects/$(PROJECT_NAME)
@@ -30,27 +32,27 @@ HTML_DEST = $(WORKSPACE_ROOT)/assets/html/projects/$(PROJECT_NAME)
 # Main build target - copy notebooks and call assets
 build:
 	@mkdir -p $(NOTEBOOK_DEST)
-	@cp notebook.src.ipynb $(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME) 2>/dev/null || true
-	@cp distributed_computing.ipynb $(NOTEBOOK_DEST)/$(DISTRIBUTED_NOTEBOOK_FILENAME) 2>/dev/null || true
+	@if [ -f notebook.src.ipynb ]; then cp notebook.src.ipynb $(NOTEBOOK_DEST)/$(NOTEBOOK_FILENAME); else echo "⚠️  notebook.src.ipynb not found (optional)"; fi
+	@if [ -f distributed_computing.ipynb ]; then cp distributed_computing.ipynb $(NOTEBOOK_DEST)/$(DISTRIBUTED_NOTEBOOK_FILENAME) && echo "✓ Copied distributed notebook"; fi
 	@$(MAKE) assets
 	@echo "✅ $(PROJECT_NAME) built successfully"
 	@echo "   Source: _projects/$(PROJECT_NAME)/"
-	@echo "   Notebook: _notebooks/projects/$(PROJECT_NAME)/$(NOTEBOOK_FILENAME)"
-	@echo "   Distributed Lesson: _notebooks/projects/$(PROJECT_NAME)/$(DISTRIBUTED_NOTEBOOK_FILENAME)"
+	@echo "   Notebooks: _notebooks/projects/$(PROJECT_NAME)/"
 	@echo "   JavaScript: assets/js/projects/$(PROJECT_NAME)/"
 	@echo "   Images: images/projects/$(PROJECT_NAME)/"
-	@echo "   Interactive Lesson: assets/html/projects/$(PROJECT_NAME)/index.html"
+	@echo "   HTML Lessons: assets/html/projects/$(PROJECT_NAME)/"
 
 # Copy only JS and image assets (not notebook) - for watch triggers
 assets:
 	@mkdir -p $(JS_DEST)/levels
-	@cp levels/*.js $(JS_DEST)/levels/ 2>/dev/null || true
+	@if [ -d levels ] && [ "$$(ls -A levels/*.js 2>/dev/null)" ]; then cp levels/*.js $(JS_DEST)/levels/ && echo "✓ Copied levels JS"; fi
 	@mkdir -p $(JS_DEST)/model
-	@cp model/*.js $(JS_DEST)/model/ 2>/dev/null || true
+	@if [ -d model ] && [ "$$(ls -A model/*.js 2>/dev/null)" ]; then cp model/*.js $(JS_DEST)/model/ && echo "✓ Copied model JS"; fi
 	@mkdir -p $(IMAGES_DEST)
-	@cp -r images/* $(IMAGES_DEST)/ 2>/dev/null || true
+	@if [ -d images ] && [ "$$(ls -A images 2>/dev/null)" ]; then cp -r images/* $(IMAGES_DEST)/ && echo "✓ Copied images"; fi
 	@mkdir -p $(HTML_DEST)
-	@cp index.html $(HTML_DEST)/ 2>/dev/null || true
+	@if [ -f index.html ]; then cp index.html $(HTML_DEST)/ && echo "✓ Copied index.html"; fi
+	@if [ -f parallel.html ]; then cp parallel.html $(HTML_DEST)/ && echo "✓ Copied parallel.html"; fi
 
 # Clean distributed files (keeps source intact)
 clean:
